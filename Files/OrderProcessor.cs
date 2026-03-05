@@ -35,7 +35,7 @@ namespace laba2rpm3k2s.Files
     {
         public void ProcessPayment(string paymentMethod, decimal amount) { }
     }
-    public class OrderRepository // класс для хранения заказов
+    public class OrderRepository
     {
         private List<Order> orders = new List<Order>();
 
