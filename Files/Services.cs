@@ -1,26 +1,21 @@
-﻿namespace laba2rpm3k2s.Files
+namespace laba2rpm3k2s.Files
 {
     using System;
     /*
-     * Нарушение принципа DIP – разные классы реализуют схожий функционал, вместо использования абстракций, а класс OrderSender создаёт зависимости
-     * Решение: создать обобщающий интерфейс, убрать зависимости
-     * Каюсь, смухлевал – в EmailService теперь нет шапки.
+     * Нарушение принципа DIP – классы создают зависимости вместо того, чтобы получать их извне
+     * Решение: изменить классы OrderService, NotificationService так, чтобы они получали зависимости через методы
      */
-    public interface Sender
+    public class EmailService
     {
-        public void Send(string recipient, string message);
-    }
-    public class EmailService : Sender
-    {
-        public void Send(string to, string subject)
+        public void SendEmail(string to, string subject, string body)
         {
             Console.WriteLine($"Sending email to {to}: {subject}");
         }
     }
 
-    public class SmsService : Sender
+    public class SmsService
     {
-        public void Send(string phoneNumber, string message)
+        public void SendSms(string phoneNumber, string message)
         {
             Console.WriteLine($"Sending SMS to {phoneNumber}: {message}");
         }
@@ -29,9 +24,10 @@
     public class OrderService
     {
         public OrderService() { }
-        public void PlaceOrder(Order order, Sender sender)
+        public void PlaceOrder(Order order, SmsService sms, EmailService email)
         {
-            sender.Send(order.Customer.Email, "Your order has been placed");
+            email.SendEmail(order.Customer.Email, "Order Confirmation", "Your order has been placed");
+            sms.SendSms(order.Customer.Phone, "Your order has been placed");
         }
     }
 
@@ -39,9 +35,9 @@
     {
         public NotificationService() { }
 
-        public void SendPromotion(string email, string promotion, Sender sender)
+        public void SendPromotion(string email, string promotion, EmailService service)
         {
-            sender.Send(email, promotion);
+            service.SendEmail(email, "Special Promotion", promotion);
         }
     }
 }
